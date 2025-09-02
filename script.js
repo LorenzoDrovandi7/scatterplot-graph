@@ -14,7 +14,6 @@ d3.json(url).then((data) => {
     d.Year = new Date(d.Year, 0, 1);
   });
 
-  // Escalas
   const xScale = d3
     .scaleTime()
     .domain([d3.min(data, (d) => d.Year), d3.max(data, (d) => d.Year)])
@@ -46,19 +45,22 @@ d3.json(url).then((data) => {
     .attr("data-yvalue", (d) => d.Time.toISOString())
     .attr("fill", (d) => (d.Doping ? "red" : "green"))
     .on("mouseover", (event, d) => {
-      tooltip.transition().duration(200).style("opacity", 0.9);
       tooltip
+        .attr("data-year", d.Year.toISOString())
         .html(
           `
-        ${d.Name}: ${d.Nationality}<br>
-        Year: ${d3.timeFormat("%Y")(d.Year)}, Time: ${d3.timeFormat("%M:%S")(d.Time)}<br>
-        ${d.Doping ? d.Doping : "No allegations"}
-      `
+      ${d.Name}: ${d.Nationality}<br>
+      Year: ${d3.timeFormat("%Y")(d.Year)}, Time: ${d3.timeFormat("%M:%S")(d.Time)}<br>
+      ${d.Doping ? d.Doping : "No allegations"}
+    `
         )
-        .attr("data-year", d.Year.getFullYear())
         .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 28 + "px");
+        .style("top", event.pageY - 28 + "px")
+        .transition()
+        .duration(200)
+        .style("opacity", 0.9);
     })
+
     .on("mouseout", () => {
       tooltip.transition().duration(200).style("opacity", 0);
     });
